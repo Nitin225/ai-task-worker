@@ -63,6 +63,11 @@ TASKS = [
      "task": "What is the total amount of all Pending invoices in the ERP? Do not change anything.",
      "fail_first": 0, "seed": [ACME, GLOBEX], "answer": "", "inv": [ACME, GLOBEX], "ven": VENDORS,
      "must_ask": False, "answer_contains": "70500"},
+    {"id": 10, "name": "Create: manual vendor",
+     "task": "Add a new vendor called Umbrella Corp with email ap@umbrella.example and phone +91 90000 00004.",
+     "fail_first": 0, "seed": [], "answer": "",
+     "inv": [], "ven": VENDORS + [("Umbrella Corp", "ap@umbrella.example", "+91 90000 00004")],
+     "must_ask": False},
 ]
 
 

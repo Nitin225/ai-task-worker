@@ -1,7 +1,7 @@
 {
-  "task": "Find the latest invoice from Acme Supplies and enter it into the ERP.",
-  "result": "Entered the latest Acme Supplies invoice into the ERP. From data/invoices, the latest was acme_2026-04.txt (INV-ACM-1087, dated 2026-04-03, INR 48,500.00, due 2026-05-03). Created it in the ERP Invoices section as ID 1 (Acme Supplies Pvt Ltd, INV-ACM-1087, 48500.0, due 2026-05-03, Pending).\n[VERIFIED by independent check] Invoice INV-ACM-1087 with correct details was added and no other changes were made.",
-  "screenshot": "traces\\20261011_172511_final.png",
+  "task": "Find the latest invoice from Acme Supplies and enter it to the ERP",
+  "result": "Entered the latest Acme Supplies invoice into the ERP: INV-ACM-1087, amount 48500.00, due date 2026-05-03 (from data/invoices/acme_2026-04.txt, dated 2026-04-03, which is newer than the 2026-03 invoice). It now appears in the Invoices list with status Pending.\n[VERIFIED by independent check] Invoice INV-ACM-1087 with correct amount and due date was added as requested.",
+  "screenshot": "traces\\20261011_215213_final.png",
   "steps": [
     {
       "step": 1,
@@ -15,20 +15,20 @@
       "step": 2,
       "tool": "read_file",
       "args": {
+        "path": "data/invoices/acme_2026-03.txt"
+      },
+      "observation": "INVOICE\nVendor: Acme Supplies Pvt Ltd\nInvoice No: INV-ACM-1041\nInvoice Date: 2026-03-02\nAmount: INR 42,300.00\nDue Date: 2026-04-01\n"
+    },
+    {
+      "step": 2,
+      "tool": "read_file",
+      "args": {
         "path": "data/invoices/acme_2026-04.txt"
       },
       "observation": "INVOICE\nVendor: Acme Supplies Pvt Ltd\nInvoice No: INV-ACM-1087\nInvoice Date: 2026-04-03\nAmount: INR 48,500.00\nDue Date: 2026-05-03\n"
     },
     {
       "step": 3,
-      "tool": "read_file",
-      "args": {
-        "path": "data/invoices/acme_2026-03.txt"
-      },
-      "observation": "INVOICE\nVendor: Acme Supplies Pvt Ltd\nInvoice No: INV-ACM-1041\nInvoice Date: 2026-03-02\nAmount: INR 42,300.00\nDue Date: 2026-04-01\n"
-    },
-    {
-      "step": 4,
       "tool": "browser_open",
       "args": {
         "url": "http://localhost:8000"
@@ -36,7 +36,7 @@
       "observation": "URL: http://localhost:8000/login\nTITLE: ERP Login\nELEMENTS:\n[1] input(text) name=username label=\"Username\"\n[2] input(password) name=password label=\"Password\"\n[3] button(submit) text=\"Login\"\nPAGE TEXT:\nCompany ERP - Login\nUsername \nPassword \nLogin"
     },
     {
-      "step": 5,
+      "step": 4,
       "tool": "browser_fill",
       "args": {
         "fields_json": "{\"username\": \"admin\", \"password\": \"admin123\"}"
@@ -44,7 +44,7 @@
       "observation": "OK: filled username, password"
     },
     {
-      "step": 6,
+      "step": 5,
       "tool": "browser_click",
       "args": {
         "idx": 3
@@ -52,7 +52,7 @@
       "observation": "URL: http://localhost:8000/invoices\nTITLE: Invoices\nELEMENTS:\n[1] a text=\"Invoices\" href=/invoices\n[2] a text=\"Vendors\" href=/vendors\n[3] a text=\"New Invoice\" href=/invoices/new\nPAGE TEXT:\nInvoices | Vendors\nInvoices\nNew Invoice\nID\tVendor\tInvoice No.\tAmount\tDue Date\tStatus\tActions\n\nNo invoices yet."
     },
     {
-      "step": 7,
+      "step": 6,
       "tool": "browser_click",
       "args": {
         "idx": 3
@@ -60,7 +60,7 @@
       "observation": "URL: http://localhost:8000/invoices/new\nTITLE: New Invoice\nELEMENTS:\n[1] a text=\"Invoices\" href=/invoices\n[2] a text=\"Vendors\" href=/vendors\n[3] input(text) name=vendor label=\"Vendor\"\n[4] input(text) name=invoice_number label=\"Invoice Number\"\n[5] input(number) name=amount label=\"Amount\"\n[6] input(date) name=due_date label=\"Due Date\"\n[7] button(submit) text=\"Submit Invoice\"\nPAGE TEXT:\nInvoices | Ve"
     },
     {
-      "step": 8,
+      "step": 7,
       "tool": "browser_fill",
       "args": {
         "fields_json": "{\"vendor\": \"Acme Supplies Pvt Ltd\", \"invoice_number\": \"INV-ACM-1087\", \"amount\": \"48500.00\", \"due_date\": \"2026-05-03\"}"
@@ -73,7 +73,7 @@
       "approved": true
     },
     {
-      "step": 9,
+      "step": 8,
       "tool": "browser_click",
       "args": {
         "idx": 7
@@ -81,7 +81,7 @@
       "observation": "URL: http://localhost:8000/invoices/new\nTITLE: Error\nELEMENTS:\n[1] a text=\"Back to form\" href=/invoices/new\nPAGE TEXT:\nError\n\n500 Internal Server Error: could not save invoice. Please try again.\n\nBack to form"
     },
     {
-      "step": 10,
+      "step": 9,
       "tool": "browser_click",
       "args": {
         "idx": 1
@@ -89,7 +89,7 @@
       "observation": "URL: http://localhost:8000/invoices/new\nTITLE: New Invoice\nELEMENTS:\n[1] a text=\"Invoices\" href=/invoices\n[2] a text=\"Vendors\" href=/vendors\n[3] input(text) name=vendor label=\"Vendor\"\n[4] input(text) name=invoice_number label=\"Invoice Number\"\n[5] input(number) name=amount label=\"Amount\"\n[6] input(date) name=due_date label=\"Due Date\"\n[7] button(submit) text=\"Submit Invoice\"\nPAGE TEXT:\nInvoices | Ve"
     },
     {
-      "step": 11,
+      "step": 10,
       "tool": "browser_fill",
       "args": {
         "fields_json": "{\"vendor\": \"Acme Supplies Pvt Ltd\", \"invoice_number\": \"INV-ACM-1087\", \"amount\": \"48500.00\", \"due_date\": \"2026-05-03\"}"
@@ -102,19 +102,19 @@
       "approved": true
     },
     {
-      "step": 12,
+      "step": 11,
       "tool": "browser_click",
       "args": {
         "idx": 7
       },
-      "observation": "URL: http://localhost:8000/invoices\nTITLE: Invoices\nELEMENTS:\n[1] a text=\"Invoices\" href=/invoices\n[2] a text=\"Vendors\" href=/vendors\n[3] a text=\"New Invoice\" href=/invoices/new\n[4] a text=\"Edit\" href=/invoices/1/edit\nPAGE TEXT:\nInvoices | Vendors\nInvoices\nNew Invoice\nID\tVendor\tInvoice No.\tAmount\tDue Date\tStatus\tActions\n1\tAcme Supplies Pvt Ltd\tINV-ACM-1087\t48500.0\t2026-05-03\tPending\tEdit"
+      "observation": "URL: http://localhost:8000/invoices\nTITLE: Invoices\nELEMENTS:\n[1] a text=\"Invoices\" href=/invoices\n[2] a text=\"Vendors\" href=/vendors\n[3] a text=\"New Invoice\" href=/invoices/new\n[4] a text=\"Edit\" href=/invoices/2/edit\nPAGE TEXT:\nInvoices | Vendors\nInvoices\nNew Invoice\nID\tVendor\tInvoice No.\tAmount\tDue Date\tStatus\tActions\n2\tAcme Supplies Pvt Ltd\tINV-ACM-1087\t48500.0\t2026-05-03\tPending\tEdit"
     },
     {
-      "step": 13,
+      "step": 12,
       "tool": "finish",
-      "claim": "Entered the latest Acme Supplies invoice into the ERP. From data/invoices, the latest was acme_2026-04.txt (INV-ACM-1087, dated 2026-04-03, INR 48,500.00, due 2026-05-03). Created it in the ERP Invoices section as ID 1 (Acme Supplies Pvt Ltd, INV-ACM-1087, 48500.0, due 2026-05-03, Pending).",
+      "claim": "Entered the latest Acme Supplies invoice into the ERP: INV-ACM-1087, amount 48500.00, due date 2026-05-03 (from data/invoices/acme_2026-04.txt, dated 2026-04-03, which is newer than the 2026-03 invoice). It now appears in the Invoices list with status Pending.",
       "verifier_verdict": "PASS",
-      "verifier_reason": "Invoice INV-ACM-1087 with correct details was added and no other changes were made."
+      "verifier_reason": "Invoice INV-ACM-1087 with correct amount and due date was added as requested."
     }
   ]
 }

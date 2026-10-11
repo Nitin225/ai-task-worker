@@ -17,9 +17,9 @@ The "internal system" is a small mock ERP (FastAPI + SQLite) that I built so the
 
 So the agent can be evaluated on creating records, updating records, and answering questions. No real credentials or third-party systems are used.
 
-- Demo video: 
-- Eval results: `evals/results.md`
-- Sample evidence from a real run (action trace JSON + final screenshot): `examples/`
+- **Demo video:** https://drive.google.com/file/d/1lrnp4LuafWfLdqe1APRPJu2lIULJcvh1/view?usp=sharing
+- Evidence from real runs (action trace JSON + final screenshot): `examples/`
+- Eval runner and results file: `evals/`
 
 ## Setup (Windows, PowerShell)
 
@@ -61,7 +61,7 @@ Invoke-RestMethod -Method Post "http://localhost:8000/admin/reset?fail_first=0" 
 Invoke-RestMethod -Method Post "http://localhost:8000/admin/reset?fail_first=1"   # first submit fails
 ```
 
-Evals (results accumulate in `evals/results.json` and `evals/results.md`; the ERP must be running):
+Evals (results accumulate in `evals/results.json` and `evals/results.md`; the ERP must be running; each task resets the ERP first):
 
 ```powershell
 python -m evals.run_evals 6        # one task by number
@@ -113,11 +113,11 @@ summary + evidence (traces/<run>_trace.json, final screenshot)
 
 **Text snapshots instead of screenshots.** The browser tool returns interactive elements as a numbered list ("[3] button Submit") plus the page text. The model answers with "click 3". This is cheaper in tokens and less error-prone than vision. Only the latest snapshot is kept in the history; older ones are replaced by a stub.
 
-**A higher-level `browser_fill` tool.** Filling a form with one call per field cost many LLM round trips. One call that fills all fields reduced a typical invoice-entry run from hitting the 25-30 step limit to 12 steps in the run I recorded.
+**A higher-level `browser_fill` tool.** Filling a form with one call per field cost many LLM round trips. One call that fills all fields reduced a typical invoice-entry run from hitting the 25-30 step limit to 12 steps in the run recorded in the demo.
 
 **Safety rules live in code, not in the prompt.** In an early run the system prompt told the model to ask before submitting, and it did not. So approval is enforced by the harness: a click on a button whose text looks like submit/save/delete is intercepted, and the user sees the exact field values. The same lesson led to the pre-flight check for ambiguity and invented values.
 
-**Independent verifier with before/after state.** The agent's "done" is never trusted. After `finish`, a separate call compares the ERP state before the run with the state now. It is designed to cover creates, updates and read-only questions, and to catch unrequested changes such as duplicates. A failure is sent back to the agent.
+**Independent verifier with before/after state.** The agent's "done" is never trusted. After `finish`, a separate call compares the ERP state before the run with the state now. It covers creates, updates and read-only questions, and catches unrequested changes such as duplicates. A failure is sent back to the agent.
 
 **Eval judge is code, not an LLM.** The eval runner compares the real database with the expected records, so it cross-checks the LLM verifier instead of depending on it.
 
@@ -134,15 +134,24 @@ summary + evidence (traces/<run>_trace.json, final screenshot)
 
 ## Testing status
 
-Be clear about what has and has not been run:
+What has and has not been run, to be explicit:
 
-- **Observed working end to end:** creating an Acme invoice with the injected 500 failure (agent recovered, re-entered all fields, verifier PASS, 12 steps); the Globex tie case (agent asked the user, entered the chosen invoice, verifier PASS).
-- **Partly observed:** the Initech "Net 30" case. The agent asked before submitting and did not invent a date, but my first full run exposed the verifier bug above; a complete passing run after the fix is [pending / add result].
-- **Implemented but not yet run by the agent:** duplicate rejection, invoice update, vendor update, mark as Paid, and the read-only question (eval tasks 5-9). Their results are in the table below only if they were run.
+**Run with the current code (shown in the demo video; evidence in `examples/`):**
+- Create an invoice from a source file with an injected 500 on the first submit: the agent re-filled all fields and retried; verifier PASS; 12 steps.
+- Update an invoice amount in the ERP (a workflow the agent had never run before): the agent found the row, opened Edit, changed only the amount after approval; verifier PASS (before/after: 48500.0 -> 50000.0); 7 steps.
 
-## Eval results
+These were run with `run_agent.py`, not through the eval runner.
 
-Nine tasks, one run each (free-tier token quotas make repeated runs impractical). Pass/fail is decided by code comparing the ERP database to the expected state, not by an LLM.
+**Run with an earlier version of the code (before the verifier and pre-flight were generalized):**
+- Two invoices tie for "latest" (the agent asked the user), and a due date of "Net 30" (the agent asked the user instead of inventing a date).
+- The eval runner was run for one task during development; `evals/results.md` is from that earlier run.
+
+**Implemented but not run yet with the current code:**
+- Eval tasks 3, 4, 5, 7, 8, 9 through the eval runner (ambiguity, missing info, duplicate, vendor update, mark Paid, read-only question), and the "approval denied" path. Free-tier token quotas did not allow more runs.
+
+## Eval tasks
+
+The eval runner defines nine tasks. Pass/fail is decided by code comparing the ERP database to the expected state, not by an LLM.
 
 | # | Task | What it tests |
 |---|------|---------------|
@@ -156,8 +165,6 @@ Nine tasks, one run each (free-tier token quotas make repeated runs impractical)
 | 8 | Mark an invoice as Paid | update one field, others unchanged |
 | 9 | "Total of Pending invoices?" | read-only question, nothing may change |
 
-Results: [paste `evals/results.md` here. List only tasks that were actually run, and say which were not run and why.]
-
 ## Known limitations
 
 - Generalization is only partly measured. The agent loop and tools are task-agnostic and the ERP has two sections, but it is still one mock app. The system prompt names the ERP URL and login, and the verifier and pre-flight prompts are written for business-record tasks. A different app would need those prompts adjusted.
@@ -166,7 +173,7 @@ Results: [paste `evals/results.md` here. List only tasks that were actually run,
 - Risky buttons are detected by their text (regex), which is a heuristic.
 - Update tasks rely on the agent finding the right row in a list from a text snapshot. Long lists (more than a page of text) are not handled. Dropdowns, file uploads, captchas, 2FA and multiple tabs are not supported.
 - The agent accepts a user's answer as given. In one test I typed the invoice date instead of the due date and it was accepted. A sanity check ("due date equals invoice date?") is not implemented.
-- Models run on free tiers with strict token quotas, so evals are one run per task and results can vary between runs.
+- Models run on free tiers with strict token quotas (per minute and per day). Runs are slow because of rate-limit retries (visible in the demo), evals are limited, and results can vary between runs.
 - No separate scratchpad memory: facts stay in the message history, with old page snapshots trimmed. This works for short tasks; long tasks would need summarization.
 
 ## What I would build next
@@ -186,6 +193,6 @@ Results: [paste `evals/results.md` here. List only tasks that were actually run,
 
 ## Models, frameworks and services
 
-- LLMs through OpenAI-compatible APIs: Groq ([agent model], [verifier/pre-flight model]) and optionally Google Gemini. Configured in `.env` (see `.env.example`).
+- LLMs through OpenAI-compatible APIs on Groq: `qwen/qwen3.8-27b` for the agent loop and `openai/gpt-oss-20b` for the verifier and pre-flight check (`openai/gpt-oss-120b` was used in earlier development runs). Google Gemini is supported through the same client. Configured in `.env` (see `.env.example`).
 - Python, Playwright (Chromium), FastAPI, Uvicorn, Jinja2, SQLite, `openai` SDK, python-dotenv.
 - AI coding assistance: Claude.
