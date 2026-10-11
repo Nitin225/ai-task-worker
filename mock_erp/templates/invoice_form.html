@@ -1,0 +1,13 @@
+<!doctype html>
+<html><head><title>New Invoice</title></head>
+<body>
+  <nav><a href="/invoices">Invoices</a> | <a href="/vendors">Vendors</a></nav>
+  <h1>New Invoice</h1>
+  <form method="post" action="/invoices/new">
+    <label>Vendor <input type="text" name="vendor" required></label><br>
+    <label>Invoice Number <input type="text" name="invoice_number" required></label><br>
+    <label>Amount <input type="number" step="0.01" name="amount" required></label><br>
+    <label>Due Date <input type="date" name="due_date" required></label><br>
+    <button type="submit">Submit Invoice</button>
+  </form>
+</body></html>

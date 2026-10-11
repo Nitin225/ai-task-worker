@@ -1,0 +1,6 @@
+INVOICE
+Vendor: Globex Corp
+Invoice No: INV-GLX-220
+Invoice Date: 2026-04-10
+Amount: INR 15,750.50
+Due Date: 2026-05-10

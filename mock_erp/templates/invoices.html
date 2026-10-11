@@ -1,0 +1,18 @@
+<!doctype html>
+<html><head><title>Invoices</title></head>
+<body>
+  <nav><a href="/invoices">Invoices</a> | <a href="/vendors">Vendors</a></nav>
+  <h1>Invoices</h1>
+  <a href="/invoices/new">New Invoice</a>
+  <table border="1" cellpadding="6">
+    <tr><th>ID</th><th>Vendor</th><th>Invoice No.</th><th>Amount</th><th>Due Date</th><th>Status</th><th>Actions</th></tr>
+    {% for r in rows %}
+    <tr>
+      <td>{{ r["id"] }}</td><td>{{ r["vendor"] }}</td><td>{{ r["invoice_number"] }}</td>
+      <td>{{ r["amount"] }}</td><td>{{ r["due_date"] }}</td><td>{{ r["status"] }}</td>
+      <td><a href="/invoices/{{ r['id'] }}/edit">Edit</a></td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% if not rows %}<p>No invoices yet.</p>{% endif %}
+</body></html>

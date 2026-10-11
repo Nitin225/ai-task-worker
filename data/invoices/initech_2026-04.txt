@@ -1,0 +1,6 @@
+INVOICE
+Vendor: Initech Ltd
+Invoice No: INV-INI-077
+Invoice Date: 2026-04-12
+Amount: INR 9,200.00
+Due Date: Net 30 (see contract)

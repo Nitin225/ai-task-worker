@@ -1,0 +1,6 @@
+INVOICE
+Vendor: Acme Supplies Pvt Ltd
+Invoice No: INV-ACM-1041
+Invoice Date: 2026-03-02
+Amount: INR 42,300.00
+Due Date: 2026-04-01

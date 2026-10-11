@@ -1,0 +1,16 @@
+<!doctype html>
+<html><head><title>Vendors</title></head>
+<body>
+  <nav><a href="/invoices">Invoices</a> | <a href="/vendors">Vendors</a></nav>
+  <h1>Vendors</h1>
+  <a href="/vendors/new">New Vendor</a>
+  <table border="1" cellpadding="6">
+    <tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Actions</th></tr>
+    {% for r in rows %}
+    <tr>
+      <td>{{ r["id"] }}</td><td>{{ r["name"] }}</td><td>{{ r["email"] }}</td><td>{{ r["phone"] }}</td>
+      <td><a href="/vendors/{{ r['id'] }}/edit">Edit</a></td>
+    </tr>
+    {% endfor %}
+  </table>
+</body></html>

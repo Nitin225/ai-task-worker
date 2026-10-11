@@ -1,0 +1,12 @@
+<!doctype html>
+<html><head><title>Vendor</title></head>
+<body>
+  <nav><a href="/invoices">Invoices</a> | <a href="/vendors">Vendors</a></nav>
+  <h1>{% if editing %}Edit Vendor{% else %}New Vendor{% endif %}</h1>
+  <form method="post" action="{{ action }}">
+    <label>Name <input type="text" name="name" value="{{ v['name'] }}" required {% if editing %}readonly{% endif %}></label><br>
+    <label>Email <input type="text" name="email" value="{{ v['email'] }}" required></label><br>
+    <label>Phone <input type="text" name="phone" value="{{ v['phone'] }}" required></label><br>
+    <button type="submit">Save Vendor</button>
+  </form>
+</body></html>

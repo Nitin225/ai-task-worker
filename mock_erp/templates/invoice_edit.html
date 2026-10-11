@@ -1,0 +1,13 @@
+﻿<!doctype html>
+<html><head><title>Edit Invoice</title></head>
+<body>
+  <nav><a href="/invoices">Invoices</a> | <a href="/vendors">Vendors</a></nav>
+  <h1>Edit Invoice {{ inv["invoice_number"] }}</h1>
+  <p>Vendor: {{ inv["vendor"] }}</p>
+  <form method="post" action="/invoices/{{ inv['id'] }}/edit">
+    <label>Amount <input type="number" step="0.01" name="amount" value="{{ inv['amount'] }}" required></label><br>
+    <label>Due Date <input type="date" name="due_date" value="{{ inv['due_date'] }}" required></label><br>
+    <label>Status (Pending or Paid) <input type="text" name="status" value="{{ inv['status'] }}" required></label><br>
+    <button type="submit">Save Changes</button>
+  </form>
+</body></html>

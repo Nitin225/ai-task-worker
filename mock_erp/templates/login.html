@@ -1,0 +1,11 @@
+<!doctype html>
+<html><head><title>ERP Login</title></head>
+<body>
+  <h1>Company ERP - Login</h1>
+  {% if error %}<p role="alert" style="color:red">{{ error }}</p>{% endif %}
+  <form method="post" action="/login">
+    <label>Username <input type="text" name="username"></label><br>
+    <label>Password <input type="password" name="password"></label><br>
+    <button type="submit">Login</button>
+  </form>
+</body></html>
