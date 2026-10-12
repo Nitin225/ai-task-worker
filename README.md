@@ -4,7 +4,7 @@ A prototype AI worker that takes a natural-language task, completes it in a real
 
 The "internal system" is a mock ERP I built (FastAPI + SQLite) with two sections: **Invoices** (create, edit amount/due date/status) and **Vendors** (create, edit email/phone). No real credentials or third-party systems are used.
 
-- **Demo video:** https://drive.google.com/file/d/1lrnp4LuafWfLdqe1APRPJu2lIULJcvh1/view?usp=sharing
+- **Demo video:** https://drive.google.com/file/d/1hOSp2SmOmABOiyBE6RhaNPDoQTBrWjRH/view?usp=sharing
 - **Evidence from real runs:** `examples/` (action trace JSON + final screenshot)
 
 ## Setup (Windows, PowerShell; tested with Python 3.14)
