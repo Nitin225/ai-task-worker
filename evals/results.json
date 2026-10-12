@@ -11,5 +11,18 @@
     "final": "Entered the latest Acme Supplies invoice (INV-ACM-1087, dated 2026-04-03, INR 48,500.00, due 2026-05-03) into the ERP. It now appears in the invoices list as ID 13.\n[VERIFIED by independent check] Inv",
     "model": "groq:qwen/qwen3.8-27b",
     "date": "2026-10-11 10:55"
+  },
+  "6": {
+    "id": 6,
+    "name": "Update: change an invoice amount",
+    "passed": true,
+    "steps": 8,
+    "questions": 0,
+    "approvals": 1,
+    "seconds": 65,
+    "note": "",
+    "final": "Updated invoice INV-ACM-1087 (Acme Supplies Pvt Ltd) amount to 50000 in the ERP.\n[VERIFIED by independent check] Invoice amount updated from 48500.0 to 50000.0 as requested",
+    "model": "groq:qwen/qwen3.8-27b",
+    "date": "2026-10-12 16:07"
   }
 }
