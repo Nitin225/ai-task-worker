@@ -7,17 +7,6 @@ The "internal system" is a mock ERP I built (FastAPI + SQLite) with two sections
 - **Demo video:** https://drive.google.com/file/d/1lrnp4LuafWfLdqe1APRPJu2lIULJcvh1/view?usp=sharing
 - **Evidence from real runs:** `examples/` (action trace JSON + final screenshot)
 
-Video guide (about 8.5 min; slow parts are free-tier rate-limit retries and live typing):
-
-| Time | What to watch |
-|---|---|
-| 0:00 | Source invoice files, then the task command |
-| 2:52 | Approval prompt showing the exact values before submit |
-| 3:00-3:20 | Injected 500 error; the agent re-fills all fields and retries |
-| 4:20 | Independent verifier: PASS |
-| 6:40-8:00 | Second task: update an invoice amount, approval, verifier compares before/after |
-| 8:20 | Saved action trace |
-
 ## Setup (Windows, PowerShell; tested with Python 3.14)
 
 ```powershell
