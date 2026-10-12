@@ -5,7 +5,7 @@ A prototype AI worker that takes a natural-language task, completes it in a real
 The "internal system" is a mock ERP I built (FastAPI + SQLite) with two sections: **Invoices** (create, edit amount/due date/status) and **Vendors** (create, edit email/phone). No real credentials or third-party systems are used.
 
 - **Demo video:** https://drive.google.com/file/d/1hOSp2SmOmABOiyBE6RhaNPDoQTBrWjRH/view?usp=sharing
-- **Evidence from real runs:** `examples/` (action trace JSON + final screenshot)
+- **Evidence from real runs:** `examples/` (action trace JSON + final screenshot) and `evals/results.md` (all 9 eval tasks)
 
 ## Setup (Windows, PowerShell; tested with Python 3.14)
 
@@ -84,18 +84,33 @@ task -> AGENT LOOP: LLM picks a tool -> tool runs -> observation (or ERROR) goes
 
 ## Testing status
 
-- **Run with the current code (in the demo video; evidence in `examples/`):** invoice entry with an injected 500 (recovered, verifier PASS, 12 steps) and an invoice amount update (verifier PASS, 7 steps), both via `run_agent.py`.
-- **Run with earlier code only:** the two-invoice tie and the "Net 30" due date (the agent asked the user in both), and one eval task, whose result is in `evals/results.md`.
-- **Implemented, not run yet:** the other eval tasks (duplicate, vendor update, mark Paid, read-only question) and the "approval denied" path. Free-tier token quotas did not allow more runs.
+All 9 eval tasks were run with the current code and passed (9/9, one run per task, `groq:qwen/qwen3.8-27b`). Pass/fail is decided by code comparing the ERP database to the expected state, not by an LLM. Full results are in `evals/results.md`.
+
+| # | Task | Result | Steps | Questions asked | Approvals | Time (s) |
+|---|------|--------|-------|-----------------|-----------|----------|
+| 1 | Normal entry | PASS | 14 | 0 | 2 | 151 |
+| 2 | Create: first submit fails with 500 | PASS | 15 | 0 | 2 | 191 |
+| 3 | Ambiguous: two invoices tie for latest | PASS | 15 | 1 | 1 | 188 |
+| 4 | Missing info: due date is 'Net 30' | PASS | 16 | 1 | 1 | 231 |
+| 5 | Idempotency: record already exists | PASS | 7 | 0 | 0 | 80 |
+| 6 | Update: change an invoice amount | PASS | 8 | 0 | 1 | 65 |
+| 7 | Update: change a vendor's email (other section) | PASS | 9 | 0 | 1 | 77 |
+| 8 | Update: mark an invoice as Paid | PASS | 8 | 0 | 1 | 62 |
+| 9 | Read-only question: total of Pending invoices | PASS | 6 | 0 | 0 | 43 |
+
+- The two ambiguity tasks (3 and 4) passed by asking the user exactly one question each instead of guessing; the idempotency task (5) finished without creating a duplicate; the read-only task (9) changed nothing.
+- **Demo video and `examples/`:** the invoice entry with an injected 500 (recovered, verifier PASS, 12 steps) and an invoice amount update (verifier PASS, 7 steps), both via `run_agent.py`.
+- **Not run yet:** the "approval denied" path (evals auto-approve, so it needs a manual run with `run_agent.py`).
+- **Caveat:** this is one run per task, so it shows the system can complete each scenario, not how often. Results from an LLM agent vary between runs, and I have not measured a success rate.
 
 ## Limitations
 
 - One mock app: the agent loop and tools are generic, but the system prompt names the ERP and the verifier/pre-flight prompts are written for business-record tasks.
-- Pre-flight and verifier are LLM calls and can be wrong; the human approval is the last line of defence (evals auto-approve).
+- Pre-flight and verifier are LLM calls and can be wrong; the human approval is the last line of defence (evals auto-approve, so the approval gate is not exercised by them).
 - Source documents are plain text, not PDFs or emails. Risky buttons are found by a text regex.
 - Not handled: long lists beyond one page of text, dropdowns, file uploads, captchas, multiple tabs.
 - The agent accepts a user's answer as given (I once typed the invoice date as the due date and it was accepted).
-- Free-tier quotas make runs slow (retries are visible in the demo) and evals limited to one run per task. No scratchpad memory; facts stay in the message history.
+- Each eval task was run once, so there is no success rate or variance estimate. Free-tier quotas make runs slow (retries are visible in the demo). No scratchpad memory; facts stay in the message history.
 
 ## What I would build next
 
